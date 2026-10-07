@@ -21,10 +21,13 @@ def run_agents(user_request: str) -> SharedState:
     # 3. Test code
     state = tester_agent(state)
 
-    # 4. Debug if necessary
-    if state.errors and state.debug_attempts < 3:
+    # 4. Debug and retry if necessary
+    while state.errors and state.debug_attempts < 3:
 
         state = debugger_agent(state)
+
+        # Review the fixed code again
+        state = reviewer_agent(state)
 
         # Test again after debugging
         state = tester_agent(state)
