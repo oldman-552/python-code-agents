@@ -187,7 +187,7 @@ TOOL_CATALOG: tuple[ToolSpec, ...] = (
     ToolSpec("pdtm", "manager", "utility", "low", skip_reason="Installer/manager only; never used to scan a target."),
     ToolSpec("subfinder", "asset-discovery", "passive", "low", third_party=True, skip_reason="Queries passive third-party data sources; requires --allow-third-party-sources."),
     ToolSpec("uncover", "asset-discovery", "passive", "medium", third_party=True, skip_reason="Queries external search providers and may require provider credentials."),
-    ToolSpec("chaos", "asset-discovery", "passive", "medium", third_party=True, skip_reason="Uses an external asset database and account credentials."),
+    ToolSpec("chaos-client", "asset-discovery", "passive", "medium", third_party=True, skip_reason="Uses an external asset database and account credentials."),
     ToolSpec("asnmap", "asset-discovery", "passive", "medium", third_party=True, skip_reason="Uses external ASN data; not needed for an exact website target."),
     ToolSpec("cloudlist", "asset-discovery", "passive", "high", third_party=True, skip_reason="Reads cloud-provider accounts and assets; requires separately scoped credentials."),
     ToolSpec("dnsx", "dns", "active", "low", active_by_default=True),
@@ -203,7 +203,6 @@ TOOL_CATALOG: tuple[ToolSpec, ...] = (
     ToolSpec("proxify", "proxy", "utility", "medium", skip_reason="Proxy service, not a target scanner."),
     ToolSpec("alterx", "asset-generation", "utility", "low", skip_reason="Generates candidate names; does not validate ownership or scan them."),
     ToolSpec("mapcidr", "asset-transformation", "utility", "low", skip_reason="Transforms CIDRs and can expand scope; not needed for explicit website targets."),
-    ToolSpec("cvemap", "vulnerability-intelligence", "utility", "low", third_party=True, skip_reason="Queries vulnerability intelligence; it does not test the target."),
     ToolSpec("cdncheck", "asset-classification", "utility", "low", third_party=True, skip_reason="External classification is not required for the bounded scan profile."),
 )
 TOOL_SPEC_BY_NAME = {spec.name: spec for spec in TOOL_CATALOG}

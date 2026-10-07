@@ -484,6 +484,12 @@ def test_output_schema_and_recommendations_are_complete(tmp_path: Path, monkeypa
     assert {item["priority"] for item in report["recommendations"]} == {"P0", "P1", "P2"}
 
 
+def test_pdtm_catalog_names_current_chaos_client_and_excludes_uninstallable_cvemap() -> None:
+    assert "chaos-client" in rctfc.TOOL_SPEC_BY_NAME
+    assert "chaos" not in rctfc.TOOL_SPEC_BY_NAME
+    assert "cvemap" not in rctfc.TOOL_SPEC_BY_NAME
+
+
 def test_python_httpx_entry_point_is_not_mistaken_for_projectdiscovery_tool(tmp_path: Path) -> None:
     wrapper = tmp_path / "httpx"
     wrapper.write_text("#!/usr/bin/python3\\nfrom httpx import main\\n", encoding="utf-8")
