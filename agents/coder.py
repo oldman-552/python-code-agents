@@ -8,7 +8,7 @@ def coder_agent(state: SharedState) -> SharedState:
 
     if "جمع" in state.user_request:
         state.code = """
-def calculate_sum(numbers)
+def calculate_sum(numbers):
     return sum(numbers)
 """.strip()
 
