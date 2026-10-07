@@ -17,3 +17,4 @@ def test_calculate_sum():
     assert calculate_sum([1, 2, 3]) == 6
     assert calculate_sum([10, 20]) == 30
     assert calculate_sum([]) == 0
+    assert calculate_sum([-1, 1]) == 0
