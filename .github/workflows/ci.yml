@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [main, "feature/**"]
+  pull_request:
+  schedule:
+    # Nightly self-test (GitHub fires cron from the default branch only)
+    - cron: "0 3 * * *"
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.11", "3.12", "3.13"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Compile all modules
+        run: python -m compileall -q .
+
+      - name: Run full test suite (unit + contract + integration vs lab)
+        run: python tests/run_tests.py
+
+      - name: Smoke scan against the bundled lab
+        run: |
+          python lab/vuln_server.py --port 8400 &
+          sleep 2
+          python rctfc_template.py --target http://127.0.0.1:8400 --scope 127.0.0.1 \
+            --allow-internal --rate 100 --timeout 5 --out out-ci \
+            --request-id ci-smoke --no-fail-on-findings > smoke_report.json
+          python - <<'PY'
+          import json
+          d = json.load(open("smoke_report.json"))
+          assert d["status"] == "ok", d
+          assert d["summary"]["total"] >= 20, d["summary"]
+          titles = " ".join(f["title"].lower() for f in d["findings"])
+          for kw in ("sql injection", "xss", "ssrf", "open redirect", "path traversal"):
+              assert kw in titles, kw
+          print("smoke OK:", d["summary"])
+          PY
+
+      - name: Upload report artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-artifacts-${{ matrix.python-version }}
+          path: |
+            out-ci/
+            smoke_report.json
+          if-no-files-found: ignore
